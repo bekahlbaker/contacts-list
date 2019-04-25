@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import devices from '../style-utils/devices';
-import AlbumCard from './albumCard';
+import ContactCard from './contactCard';
 
 const Main = styled.div`
   align-items: center;
@@ -13,7 +13,7 @@ const Main = styled.div`
   }
 
   @media ${devices.desktop} {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 
   grid-gap: 1em;
@@ -23,9 +23,9 @@ const Main = styled.div`
 `;
 
 const Grid = props => {
-  const { albums, onClick } = props;
-  const gridItems = albums.map(album => (
-    <AlbumCard album={album} onClick={onClick} key={album.album_title} />
+  const { contacts, onClick } = props;
+  const gridItems = contacts.map(contact => (
+    <ContactCard contact={contact} onClick={onClick} key={contact.id.value} />
   ));
   return <Main>{gridItems}</Main>;
 };

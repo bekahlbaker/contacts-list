@@ -5,9 +5,8 @@ import Header from '../components/header';
 import Grid from '../components/grid';
 import EditModal from '../components/editModal';
 import SearchBar from '../components/searchbar';
-import HoverButton from '../components/hoverButton';
 
-import { getAlbums } from '../api/albums';
+import { getContacts } from '../api/contacts';
 import colors from '../style-utils/colors';
 
 const DashboardLayout = styled.div`
@@ -23,89 +22,70 @@ class Dashboard extends Component {
 
     this.state = {
       searchValue: '',
-      albums: [],
-      filteredAlbums: [],
+      contacts: [],
+      filteredContacts: [],
       isEditing: false,
-      selectedAlbum: {},
-      currentPage: 1,
-      morePagesAvailable: false,
+      selectedContact: {},
     };
   }
 
   componentDidMount() {
-    this.fetchAlbums();
+    this.fetchContacts();
   }
 
-  // Fetch initial albums
-  fetchAlbums = async () => {
-    const response = await getAlbums(this.state.currentPage);
-    this.setState({ morePagesAvailable: response.nextPage });
-    this.populateAlbums(response.results);
+  // Fetch initial contacts
+  fetchContacts = async () => {
+    const response = await getContacts(20);
+    this.populateContacts(response.results);
+    console.log('CONTACTS', response);
   };
 
-  // Load More Albums
-  loadMoreAlbums = async () => {
-    const response = await getAlbums(this.state.currentPage + 1);
-    this.setState({ morePagesAvailable: response.nextPage });
-    const updated = [...this.state.albums, ...response.results];
-    this.populateAlbums(updated);
+  // Populate contacts with passed array
+  populateContacts = contacts => {
+    this.setState({ contacts: contacts, filteredContacts: contacts });
   };
 
-  // Populate albums with passed array
-  populateAlbums = albums => {
-    this.setState({ albums: albums, filteredAlbums: albums });
-  };
-
-  // Filter albums by search value
+  // Filter contacts by search value
   handleSearch = searchValue => {
     this.setState({ searchValue }, () => {
       if (searchValue !== '') {
-        const filtered = this.state.albums.filter(
-          album =>
-            album.album_title
+        const filtered = this.state.contacts.filter(
+          contact =>
+            contact.contact_title
               .toLowerCase()
               .includes(searchValue.toLowerCase()) ||
-            album.year
+            contact.year
               .toString()
               .toLowerCase()
               .includes(searchValue.toLowerCase()) ||
-            album.condition.toLowerCase().includes(searchValue.toLowerCase()) ||
-            album.artist.name.toLowerCase().includes(searchValue.toLowerCase()),
+            contact.condition
+              .toLowerCase()
+              .includes(searchValue.toLowerCase()) ||
+            contact.artist.name
+              .toLowerCase()
+              .includes(searchValue.toLowerCase()),
         );
-        this.setState({ filteredAlbums: filtered });
+        this.setState({ filteredContacts: filtered });
       } else {
-        this.populateAlbums(this.state.albums);
+        this.populateContacts(this.state.contacts);
       }
     });
   };
 
   // Open Edit Modal
-  handleSelectAlbum = album => {
-    this.setState({ selectedAlbum: album, isEditing: true });
+  handleSelectContact = contact => {
+    this.setState({ selectedContact: contact, isEditing: true });
   };
 
-  handleSave = album => {
-    // Save edited album
-    const index = this.state.albums.findIndex(
-      a => a.album_title === this.state.selectedAlbum.album_title,
+  handleSave = contact => {
+    // Save edited contact
+    const index = this.state.contacts.findIndex(
+      a => a.contact_title === this.state.selectedContact.contact_title,
     );
-    const arr = this.state.albums;
-    arr.splice(index, 1, album);
-    this.populateAlbums(arr);
+    const arr = this.state.contacts;
+    arr.splice(index, 1, contact);
+    this.populateContacts(arr);
 
-    if (album.artist.name !== this.state.selectedAlbum.artist.name) {
-      // Find all artists and change name
-      const updatedArr = this.state.albums.map(a => {
-        if (a.artist.id === this.state.selectedAlbum.artist.id) {
-          return {
-            ...a,
-            artist: { ...a.artist, name: album.artist.name },
-          };
-        }
-        return a;
-      });
-      this.populateAlbums(updatedArr);
-    }
     this.setState({ isEditing: false });
   };
 
@@ -114,7 +94,7 @@ class Dashboard extends Component {
       <DashboardLayout position={this.state.isEditing ? 'fixed' : 'initial'}>
         {this.state.isEditing && (
           <EditModal
-            album={this.state.selectedAlbum}
+            album={this.state.selectedContact}
             handleCancel={() => this.setState({ isEditing: false })}
             handleSave={album => this.handleSave(album)}
           />
@@ -127,16 +107,9 @@ class Dashboard extends Component {
           isEditing={this.state.isEditing}
         />
         <Grid
-          albums={this.state.filteredAlbums}
-          onClick={album => this.handleSelectAlbum(album)}
+          contacts={this.state.filteredContacts}
+          onClick={album => this.handleSelectContact(album)}
         />
-        {this.state.morePagesAvailable && (
-          <HoverButton
-            title="More"
-            fontColor={colors.darkAccent}
-            onClick={() => this.loadMoreAlbums()}
-          />
-        )}
       </DashboardLayout>
     );
   }
