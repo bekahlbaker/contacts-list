@@ -1,6 +1,7 @@
 # Contact's List
 
 An awesome way to store and update your contacts!
+(Playing around with Hooks and Styled Components)
 
 ## Requirements
 

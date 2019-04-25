@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Header from '../components/header';
@@ -7,7 +7,6 @@ import EditModal from '../components/editModal';
 import SearchBar from '../components/searchbar';
 
 import { getContacts } from '../api/contacts';
-import colors from '../style-utils/colors';
 
 const DashboardLayout = styled.div`
   align-items: center;
@@ -16,101 +15,90 @@ const DashboardLayout = styled.div`
   position: ${props => props.position};
 `;
 
-class Dashboard extends Component {
-  constructor() {
-    super();
+export default function Dashboard() {
+  const [contacts, setContacts] = useState([]);
+  const [filteredContacts, setFilteredContacts] = useState([]);
+  const [searchValue, setSearchValue] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [selectedContact, setSelectedContact] = useState({});
 
-    this.state = {
-      searchValue: '',
-      contacts: [],
-      filteredContacts: [],
-      isEditing: false,
-      selectedContact: {},
-    };
-  }
+  // Fetch contacts
+  useEffect(() => {
+    async function fetchContacts() {
+      const response = await getContacts(20);
+      console.log('RESPONSE', response);
+      populateContacts(response.results);
+    }
 
-  componentDidMount() {
-    this.fetchContacts();
-  }
-
-  // Fetch initial contacts
-  fetchContacts = async () => {
-    const response = await getContacts(20);
-    this.populateContacts(response.results);
-    console.log('CONTACTS', response);
-  };
+    fetchContacts();
+  }, []);
 
   // Populate contacts with passed array
-  populateContacts = contacts => {
-    this.setState({ contacts: contacts, filteredContacts: contacts });
-  };
+  function populateContacts(contacts) {
+    setContacts(contacts);
+    setFilteredContacts(contacts);
+  }
 
   // Filter contacts by search value
-  handleSearch = searchValue => {
-    this.setState({ searchValue }, () => {
-      if (searchValue !== '') {
-        const filtered = this.state.contacts.filter(
-          contact =>
-            contact.name.first
-              .toLowerCase()
-              .includes(searchValue.toLowerCase()) ||
-            contact.name.last
-              .toString()
-              .toLowerCase()
-              .includes(searchValue.toLowerCase()) ||
-            contact.email.toLowerCase().includes(searchValue.toLowerCase()) ||
-            contact.location.street
-              .toLowerCase()
-              .includes(searchValue.toLowerCase()),
-        );
-        this.setState({ filteredContacts: filtered });
-      } else {
-        this.populateContacts(this.state.contacts);
-      }
-    });
-  };
+  function handleSearch(searchValue) {
+    setSearchValue(searchValue);
+    if (searchValue !== '') {
+      const filtered = contacts.filter(
+        contact =>
+          contact.name.first
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          contact.name.last
+            .toString()
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()) ||
+          contact.email.toLowerCase().includes(searchValue.toLowerCase()) ||
+          contact.location.street
+            .toLowerCase()
+            .includes(searchValue.toLowerCase()),
+      );
+      setFilteredContacts(filtered);
+    } else {
+      populateContacts(contacts);
+    }
+  }
 
   // Open Edit Modal
-  handleSelectContact = contact => {
-    this.setState({ selectedContact: contact, isEditing: true });
-  };
-
-  handleSave = contact => {
-    // Save edited contact
-    const index = this.state.contacts.findIndex(
-      a => a.phone === this.state.selectedContact.phone,
-    );
-    const arr = this.state.contacts;
-    arr.splice(index, 1, contact);
-    this.populateContacts(arr);
-
-    this.setState({ isEditing: false });
-  };
-
-  render() {
-    return (
-      <DashboardLayout position={this.state.isEditing ? 'fixed' : 'initial'}>
-        {this.state.isEditing && (
-          <EditModal
-            contact={this.state.selectedContact}
-            handleCancel={() => this.setState({ isEditing: false })}
-            handleSave={album => this.handleSave(album)}
-          />
-        )}
-        <Header />
-        <SearchBar
-          placeholder="Search..."
-          value={this.state.searchValue}
-          onChange={searchValue => this.handleSearch(searchValue.target.value)}
-          isEditing={this.state.isEditing}
-        />
-        <Grid
-          contacts={this.state.filteredContacts}
-          onClick={contact => this.handleSelectContact(contact)}
-        />
-      </DashboardLayout>
-    );
+  function handleSelectContact(contact) {
+    setSelectedContact(contact);
+    setIsEditing(true);
   }
-}
 
-export default Dashboard;
+  function handleSave(contact) {
+    // Save edited contact
+    const index = contacts.findIndex(a => a.phone === selectedContact.phone);
+    const arr = contacts;
+    arr.splice(index, 1, contact);
+    populateContacts(arr);
+
+    setIsEditing(false);
+  }
+
+  return (
+    <DashboardLayout position={isEditing ? 'fixed' : 'initial'}>
+      {isEditing && (
+        <EditModal
+          contact={selectedContact}
+          handleCancel={() => setIsEditing(false)}
+          handleSave={album => handleSave(album)}
+        />
+      )}
+      <Header />
+      <SearchBar
+        placeholder="Search..."
+        value={searchValue}
+        onChange={searchValue => handleSearch(searchValue.target.value)}
+        isEditing={isEditing}
+      />
+      <Grid
+        contacts={filteredContacts}
+        onClick={contact => handleSelectContact(contact)}
+      />
+    </DashboardLayout>
+  );
+}

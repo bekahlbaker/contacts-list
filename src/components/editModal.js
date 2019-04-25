@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import colors from '../style-utils/colors';
 import Button from './button';
@@ -37,102 +37,90 @@ const EditView = styled.div`
   padding: 10px;
 `;
 
-class EditModal extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      contact: props.contact,
-    };
-  }
+export default function EditModal(props) {
+  const [contact, setContact] = useState(props.contact);
 
   // Edit selected contact
-  handleChangeFromForm = value => {
-    this.setState({ contact: { ...this.state.contact, ...value } }, () =>
-      console.log('Edit Modal: ', this.state.contact),
-    );
-  };
-
-  render() {
-    const { handleCancel, handleSave } = this.props;
-    const { name, dob, email, phone, location } = this.state.contact;
-    return (
-      <Overlay>
-        <Main>
-          <ButtonView>
-            <Button
-              title="Cancel"
-              fontColor={colors.error}
-              onClick={handleCancel}
-            />
-            <Button
-              title="Save"
-              fontColor={colors.success}
-              onClick={() => handleSave(this.state.contact)}
-            />
-          </ButtonView>
-          <EditView>
-            <Input
-              label="First"
-              placeholder="First"
-              onChange={value =>
-                this.handleChangeFromForm({
-                  name: { ...name, first: value.target.value },
-                })
-              }
-              value={name.first}
-            />
-            <Input
-              label="Last"
-              placeholder="Last"
-              onChange={value =>
-                this.handleChangeFromForm({
-                  name: { ...name, last: value.target.value },
-                })
-              }
-              value={name.last}
-            />
-            <Input
-              label="Birthday"
-              placeholder="Birthday"
-              onChange={value =>
-                this.handleChangeFromForm({
-                  dob: { ...dob, date: value.target.value },
-                })
-              }
-              value={dob.date}
-            />
-            <Input
-              label="Email"
-              placeholder="Email"
-              onChange={value =>
-                this.handleChangeFromForm({ email: value.target.value })
-              }
-              value={email}
-            />
-            <Input
-              label="Phone"
-              placeholder="Phone"
-              onChange={value =>
-                this.handleChangeFromForm({ phone: value.target.value })
-              }
-              value={phone}
-            />
-            <Input
-              label="Address"
-              placeholder="Address"
-              onChange={value =>
-                this.handleChangeFromForm({
-                  location: { ...location, street: value.target.value },
-                })
-              }
-              value={location.street}
-            />
-          </EditView>
-        </Main>
-      </Overlay>
-    );
+  function handleChangeFromForm(value) {
+    return setContact({ ...contact, ...value });
   }
-}
 
-export default EditModal;
+  const { handleCancel, handleSave } = props;
+  const { name, dob, email, phone, location } = contact;
+  return (
+    <Overlay>
+      <Main>
+        <ButtonView>
+          <Button
+            title="Cancel"
+            fontColor={colors.error}
+            onClick={handleCancel}
+          />
+          <Button
+            title="Save"
+            fontColor={colors.success}
+            onClick={() => handleSave(contact)}
+          />
+        </ButtonView>
+        <EditView>
+          <Input
+            label="First"
+            placeholder="First"
+            onChange={value =>
+              handleChangeFromForm({
+                name: { ...name, first: value.target.value },
+              })
+            }
+            value={name.first}
+          />
+          <Input
+            label="Last"
+            placeholder="Last"
+            onChange={value =>
+              handleChangeFromForm({
+                name: { ...name, last: value.target.value },
+              })
+            }
+            value={name.last}
+          />
+          <Input
+            label="Birthday"
+            placeholder="Birthday"
+            onChange={value =>
+              handleChangeFromForm({
+                dob: { ...dob, date: value.target.value },
+              })
+            }
+            value={dob.date}
+          />
+          <Input
+            label="Email"
+            placeholder="Email"
+            onChange={value =>
+              handleChangeFromForm({ email: value.target.value })
+            }
+            value={email}
+          />
+          <Input
+            label="Phone"
+            placeholder="Phone"
+            onChange={value =>
+              handleChangeFromForm({ phone: value.target.value })
+            }
+            value={phone}
+          />
+          <Input
+            label="Address"
+            placeholder="Address"
+            onChange={value =>
+              handleChangeFromForm({
+                location: { ...location, street: value.target.value },
+              })
+            }
+            value={location.street}
+          />
+        </EditView>
+      </Main>
+    </Overlay>
+  );
+}

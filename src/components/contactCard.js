@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import styled from 'styled-components';
 import colors from '../style-utils/colors';
 import EditIcon from '../assets/images/edit.png';
@@ -25,6 +25,7 @@ const Title = styled.p`
   font-size: 1.25em;
   font-weight: 600;
   margin: 2px;
+  margin-bottom: 16px;
   text-align: center;
 `;
 
@@ -58,45 +59,36 @@ const EditImage = styled.img`
   width: 35px;
 `;
 
-class ContactCard extends Component {
-  constructor() {
-    super();
-
-    this.state = {
-      showEditing: false,
-    };
-  }
-  render() {
-    const { contact, onClick } = this.props;
-    const { name, dob, email, picture, phone, location } = contact;
-    return (
-      <Wrapper>
-        <Avatar picture={picture} />
-        <Main>
-          <Title>{`${name.first} ${name.last}`}</Title>
-          <Description>
-            <Span>Birthday: </Span>
-            {dob.date}
-          </Description>
-          <Description>
-            <Span>Email: </Span>
-            {email}
-          </Description>
-          <Description>
-            <Span>Phone: </Span>
-            {phone}
-          </Description>
-          <Description>
-            <Span>Address: </Span>
-            {location.street}
-          </Description>
-          <EditButton onClick={() => onClick(contact)}>
-            <EditImage src={EditIcon} />
-          </EditButton>
-        </Main>
-      </Wrapper>
-    );
-  }
-}
+const ContactCard = props => {
+  const { contact, onClick } = props;
+  const { name, dob, email, picture, phone, location } = contact;
+  return (
+    <Wrapper>
+      <Avatar picture={picture} />
+      <Main>
+        <Title>{`${name.first} ${name.last}`}</Title>
+        <Description>
+          <Span>Birthday: </Span>
+          {dob.date}
+        </Description>
+        <Description>
+          <Span>Email: </Span>
+          {email}
+        </Description>
+        <Description>
+          <Span>Phone: </Span>
+          {phone}
+        </Description>
+        <Description>
+          <Span>Address: </Span>
+          {location.street}
+        </Description>
+        <EditButton onClick={() => onClick(contact)}>
+          <EditImage src={EditIcon} />
+        </EditButton>
+      </Main>
+    </Wrapper>
+  );
+};
 
 export default ContactCard;

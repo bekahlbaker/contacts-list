@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const Avatar = styled.div`
   margin: 0 auto;
-  margin-top: -75px;
+  margin-top: -65px;
   position: absolute;
   z-index: 1;
 `;
