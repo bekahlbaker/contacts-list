@@ -78,7 +78,7 @@ class Dashboard extends Component {
   handleSave = contact => {
     // Save edited contact
     const index = this.state.contacts.findIndex(
-      a => a.contact_title === this.state.selectedContact.contact_title,
+      a => a.phone === this.state.selectedContact.phone,
     );
     const arr = this.state.contacts;
     arr.splice(index, 1, contact);
@@ -92,7 +92,7 @@ class Dashboard extends Component {
       <DashboardLayout position={this.state.isEditing ? 'fixed' : 'initial'}>
         {this.state.isEditing && (
           <EditModal
-            album={this.state.selectedContact}
+            contact={this.state.selectedContact}
             handleCancel={() => this.setState({ isEditing: false })}
             handleSave={album => this.handleSave(album)}
           />
@@ -106,7 +106,7 @@ class Dashboard extends Component {
         />
         <Grid
           contacts={this.state.filteredContacts}
-          onClick={album => this.handleSelectContact(album)}
+          onClick={contact => this.handleSelectContact(contact)}
         />
       </DashboardLayout>
     );

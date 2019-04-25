@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import colors from '../style-utils/colors';
 import Button from './button';
 import Input from './input';
-import Dropdown from './dropdown';
 
 const Overlay = styled.div`
   align-items: center;
@@ -43,22 +42,20 @@ class EditModal extends Component {
     super(props);
 
     this.state = {
-      album: props.album,
+      contact: props.contact,
     };
   }
 
-  // Edit selected album
+  // Edit selected contact
   handleChangeFromForm = value => {
-    this.setState({ album: { ...this.state.album, ...value } }, () =>
-      console.log('Edit Modal: ', this.state.album),
+    this.setState({ contact: { ...this.state.contact, ...value } }, () =>
+      console.log('Edit Modal: ', this.state.contact),
     );
   };
 
   render() {
     const { handleCancel, handleSave } = this.props;
-    const { album } = this.state;
-    const { album_title, year, condition, artist } = album;
-    const { name } = artist;
+    const { name, dob, email, phone, location } = this.state.contact;
     return (
       <Overlay>
         <Main>
@@ -71,43 +68,65 @@ class EditModal extends Component {
             <Button
               title="Save"
               fontColor={colors.success}
-              onClick={() => handleSave(this.state.album)}
+              onClick={() => handleSave(this.state.contact)}
             />
           </ButtonView>
           <EditView>
             <Input
-              label="Title"
-              placeholder="Title"
-              onChange={value =>
-                this.handleChangeFromForm({ album_title: value.target.value })
-              }
-              value={album_title}
-            />
-            <Input
-              label="Artist"
-              placeholder="Artist"
+              label="First"
+              placeholder="First"
               onChange={value =>
                 this.handleChangeFromForm({
-                  artist: { ...artist, name: value.target.value },
+                  name: { ...name, first: value.target.value },
                 })
               }
-              value={name}
+              value={name.first}
             />
             <Input
-              label="Year"
-              placeholder="Year"
+              label="Last"
+              placeholder="Last"
               onChange={value =>
-                this.handleChangeFromForm({ year: value.target.value })
+                this.handleChangeFromForm({
+                  name: { ...name, last: value.target.value },
+                })
               }
-              value={year}
+              value={name.last}
             />
-            <Dropdown
-              label="Condition"
-              placeholder="Condition"
+            <Input
+              label="Birthday"
+              placeholder="Birthday"
               onChange={value =>
-                this.handleChangeFromForm({ condition: value.target.value })
+                this.handleChangeFromForm({
+                  dob: { ...dob, date: value.target.value },
+                })
               }
-              passedValue={condition}
+              value={dob.date}
+            />
+            <Input
+              label="Email"
+              placeholder="Email"
+              onChange={value =>
+                this.handleChangeFromForm({ email: value.target.value })
+              }
+              value={email}
+            />
+            <Input
+              label="Phone"
+              placeholder="Phone"
+              onChange={value =>
+                this.handleChangeFromForm({ phone: value.target.value })
+              }
+              value={phone}
+            />
+            <Input
+              label="Address"
+              placeholder="Address"
+              onChange={value =>
+                this.handleChangeFromForm({
+                  location: { ...location, street: value.target.value },
+                })
+              }
+              value={location.street}
             />
           </EditView>
         </Main>
