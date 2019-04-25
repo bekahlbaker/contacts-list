@@ -51,17 +51,15 @@ class Dashboard extends Component {
       if (searchValue !== '') {
         const filtered = this.state.contacts.filter(
           contact =>
-            contact.contact_title
+            contact.name.first
               .toLowerCase()
               .includes(searchValue.toLowerCase()) ||
-            contact.year
+            contact.name.last
               .toString()
               .toLowerCase()
               .includes(searchValue.toLowerCase()) ||
-            contact.condition
-              .toLowerCase()
-              .includes(searchValue.toLowerCase()) ||
-            contact.artist.name
+            contact.email.toLowerCase().includes(searchValue.toLowerCase()) ||
+            contact.location.street
               .toLowerCase()
               .includes(searchValue.toLowerCase()),
         );

@@ -25,7 +25,7 @@ const Main = styled.div`
 const Grid = props => {
   const { contacts, onClick } = props;
   const gridItems = contacts.map(contact => (
-    <ContactCard contact={contact} onClick={onClick} key={contact.id.value} />
+    <ContactCard contact={contact} onClick={onClick} key={contact.phone} />
   ));
   return <Main>{gridItems}</Main>;
 };
